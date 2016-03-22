@@ -11,8 +11,36 @@ import java.lang.reflect.Proxy
 
 var staticCallCount = 0;
 
+//todo how i can suppress warnings
 fun incrementCallCount() {
     staticCallCount += 1
+}
+
+// ok, so if you wanted to add context it looks like you're limited to modifying the jbc to include field decls.
+// is this so bad?
+class TestingSimpleRewrite {
+
+    var callCount : Int = 0
+
+    fun foo() : Unit {
+        callCount += 1
+    }
+}
+
+class TestingIntrospectionOfInterestingMethod{
+
+    var thingy = 0;
+
+    fun bar() : Unit {
+
+        var x = 3.0 + 4.0 + 5.0;
+
+        while(thingy < 5){
+            x = x + 3.0;
+        }
+
+        thingy = x.toInt();
+    }
 }
 
 class JavassistFixture {
@@ -25,14 +53,16 @@ class JavassistFixture {
 
         //setup
         val pool = ClassPool.getDefault();
-        var testingClazz = pool.get("com.softwareleyline.Testing")
+        var testingClazz = pool.get("com.softwareleyline.TestingSimpleRewrite")
 
         //act
         testingClazz.getMethod("foo", "()V").insertBefore(
+                // note that I found this name through google + trial and error,
+                // http://stackoverflow.com/questions/33907095/kotlin-how-to-do-reflection-on-packages
                 "com.softwareleyline.JavassistFixtureKt.incrementCallCount();"
         );
         testingClazz.freeze();
-        var instance = testingClazz.toClass().newInstance() as Testing
+        var instance = testingClazz.toClass().newInstance() as TestingSimpleRewrite
         instance.foo();
         instance.foo();
 
@@ -41,13 +71,20 @@ class JavassistFixture {
         assertThat(staticCallCount).isEqualTo(2)
         assertThat(instance.callCount).isEqualTo(2)
     }
-}
 
-class Testing{
+    @Test fun when_inspecting_method_should_get_reasonable_introspection(){
 
-    var callCount : Int = 0
+        //setup
+        val pool = ClassPool.getDefault();
+        var introspectableClass = pool.get("com.softwareleyline.TestingIntrospectionOfInterestingMethod")
 
-    fun foo() : Unit {
-        callCount += 1
+        //act
+//        introspectableClass.getMethod("bar", "()V").
+        fail("unimplemented, but I can totall do this!")
+        //see https://jboss-javassist.github.io/javassist/html/javassist/bytecode/analysis/Analyzer.html
+        // and the bytecode/analysis package, it has a 'basic-block' type.
+        // it looks like javassist might actually be comperable to llvm
+
+        //assert
     }
 }
