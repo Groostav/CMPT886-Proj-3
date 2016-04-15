@@ -1,6 +1,8 @@
 package com.softwareleyline
 
 import javassist.ClassPool
+import javassist.bytecode.analysis.ControlFlow
+import javassist.bytecode.stackmap.BasicBlock
 import org.assertj.core.api.Assertions.*
 import org.junit.Test
 import java.lang.reflect.Proxy
@@ -79,12 +81,19 @@ class JavassistFixture {
         var introspectableClass = pool.get("com.softwareleyline.TestingIntrospectionOfInterestingMethod")
 
         //act
-//        introspectableClass.getMethod("bar", "()V").
-        fail("unimplemented, but I can totall do this!")
-        //see https://jboss-javassist.github.io/javassist/html/javassist/bytecode/analysis/Analyzer.html
-        // and the bytecode/analysis package, it has a 'basic-block' type.
-        // it looks like javassist might actually be comperable to llvm
+        val method = introspectableClass.getMethod("bar", "()V")
+        val blocks = ControlFlow(method).basicBlocks()
+        // ok, so each block has 'entrances' and 'exits',
+        // except for the first one in the method and the last one in the method.
+        // interestingly, the entrance to the first node what would-be callsites) is Block[]
 
         //assert
+        assertThat(blocks).hasSize(4);
+        assertThat(blocks.first().incomings()).isEqualTo(0) //first block in the method
+        assertThat(blocks.first().exits()).isEqualTo(1)
+        assertThat(blocks.last().incomings()).isEqualTo(1) //last block,
+        assertThat(blocks.last().exits()).isEqualTo(0); //return statement has no 'to' block, _statically_ at least.
+
+        //now how the bugger do i get source code.
     }
 }
