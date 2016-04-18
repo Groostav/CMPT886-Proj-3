@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="javacg-0.1-SNAPSHOT-dycg-agent">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/javacg-0.1-SNAPSHOT-dycg-agent.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javacg-0.1-SNAPSHOT-static.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javacg-0.1-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../java-callgraph/src/main/java" />
+    </SOURCES>
+  </library>
+</component>
