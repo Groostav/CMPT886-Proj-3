@@ -1,5 +1,10 @@
+
+//nice. take that file.
+@file:Suppress("unused")
+
 package com.softwareleyline
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import gr.gousiosg.javacg.stat.ClassVisitor
 import gr.gousiosg.javacg.stat.MethodVisitor
 import javassist.ClassPool
@@ -21,7 +26,6 @@ import java.util.*
 
 var staticCallCount = 0;
 
-//todo how i can suppress warnings
 fun incrementCallCount() {
     staticCallCount += 1
 }
@@ -105,31 +109,24 @@ class JavassistFixture {
         //now how the bugger do i get source code.
     }
 
-
-
-
-
     @Test fun when_using_static_analysis_to_build_identifiers_should_properly_identify(){
 
         val methodVisitorFactory = { m : MethodGen, c : JavaClass -> object : MethodVisitor(m, c) {
+
             override fun visitINVOKEINTERFACE(i: INVOKEINTERFACE?) {
-                super.visitINVOKEINTERFACE(i)
             }
 
             override fun visitINVOKESTATIC(i: INVOKESTATIC?) {
-                super.visitINVOKESTATIC(i)
             }
 
             override fun visitINVOKEVIRTUAL(i: INVOKEVIRTUAL?) {
-                super.visitINVOKEVIRTUAL(i)
             }
 
             override fun visitINVOKESPECIAL(i: INVOKESPECIAL?) {
-                super.visitINVOKESPECIAL(i)
             }
         }}
 
-        val clazz = Repository.lookupClass(ExampleDag::class.java)
+        val clazz = Repository.lookupClass(ExampleCode::class.java)
 
         val classVisitor = object : ClassVisitor(clazz){
             override fun visitMethod(method: Method?) {
@@ -140,44 +137,94 @@ class JavassistFixture {
         }
 
         classVisitor.start();
+
+        //so this gets me call sites but it doesnt get me basic blocks.
+        //but the empty visitor does get you a visit method on all of the things inside a basic block.
+        //ah ok, but its not traversing in order of the basic block graph,
+        // its traversing in order of the static (source-code-ish) hierarchy,
+        // that might be fine for my purposes.
+
+        // so, maybe we specialize to just a function call graph.... er...
+        // hmm... no this doesnt get me the graph I want, i need a basic-block graph...
+        //
     }
-}
 
-//from http://www2.cs.sfu.ca/~wsumner/teaching/886/dynamic.pdf
-class ExampleDag(){
+    @Test fun do_thing(){
+        //setup
+        val pool = ClassPool.getDefault();
+        var introspectableClass = pool.get("com.softwareleyline.ExampleCode")
 
-    val random = Random();
+        //act
+        val method = introspectableClass.getMethod("exampleDag", "()V")
+        val blocks = ControlFlow(method).basicBlocks()
+        // ok, so each block has 'entrances' and 'exits',
+        // except for the first one in the method and the last one in the method.
+        // interestingly, the entrance to the first node what would-be callsites) is Block[]
 
-    fun exampleDag(){
+        //so, fuck, these block objects are surrogates. I suspect there the block.position()
+        // and block.length() methods give me an index and offset value into the file, so if I
+        // knew the counter-part binaryFile.getInstructionAt(block.position()) i'd be in good shape.
+        // but I don't, and after 10 minutes of googling I'm not suere where it is.
+        // this documentation is aweful. Also I just noticed the really wierd licensing.
+        // JBoss is weird.
 
-        var goLeft = A();
+        //going to look at soot now --as if i have the time :depressed: :reallyJustWantToSleep:
 
-        if(goLeft){
+        introspectableClass.freeze();
+        var instance = introspectableClass.toClass().newInstance() as ExampleCode
 
-            var goAcross = B();
+        instance.exampleDag();
 
-            if(goAcross){
-                C();
+    }
+
+
+    //ok, so soot:
+    // cant find it on maven except from robovm.org
+    //   => robovm is JVM on IOS? nifty? How did I not know about this thing?
+    //        => why does microsoft have the power to shut it down? wat!?
+    // back on track: their most recent github release is 2013.
+    // alright looking at walla and spoon.
+
+
+    //walla:
+    // The T. J. Watson Libraries for Analysis (WALA) provide static analysis capabilities for
+    // Java bytecode and related languages and for JavaScript
+    // static analysis. damn.
+
+    //Spoon:
+    // so spoon is nifty but its not a library its a framework. I like things in jars that I put in my /lib folder.
+    // I'll tolerate a little hanky-panky with classloaders if thats what the library does (eg javassist),
+    // but I really dont want to have to dick around with build systems (again) to get this assignment off the ground
+
+    //so, lets spend another 10 minutes with javassist.
+
+
+    private fun getExits(block : ControlFlow.Block) : Sequence<BasicBlock> {
+        //nifty syntax for closures consistently impresses me.
+        return DelegateSequence({block.incomings()}, {block.incoming(it)})
+    }
+
+    private fun getEnters(block : ControlFlow.Block) : Sequence<BasicBlock> {
+        return DelegateSequence({block.exits()}, {block.exit(it)})
+    }
+
+    class DelegateSequence(val size: () -> Int, val get : (Int) -> ControlFlow.Block) : Sequence<ControlFlow.Block> {
+
+        //still have these nasty things though, I suspect theres some clever kotlin trick I'm missing.
+        override fun iterator(): Iterator<ControlFlow.Block> {
+            return object : Iterator<ControlFlow.Block>{
+
+                var currentIdx = 0;
+
+                override fun next(): ControlFlow.Block {
+                    return get(currentIdx)
+                }
+
+                override fun hasNext(): Boolean {
+                    return currentIdx < size()
+                }
+
             }
         }
-        else{
-            C();
-        }
-
-        val goLeftAgain = D()
-
-        if(goLeftAgain){
-            E();
-        }
-
-        F();
     }
-
-
-    fun A() : Boolean { return random.nextBoolean(); }
-    fun B() : Boolean { return random.nextBoolean(); }
-    fun C(){}
-    fun D() : Boolean { return random.nextBoolean(); }
-    fun E(){}
-    fun F(){}
 }
