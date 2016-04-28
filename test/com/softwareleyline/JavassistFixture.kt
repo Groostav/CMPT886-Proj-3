@@ -21,6 +21,15 @@ import java.lang.reflect.Proxy
 import java.util.*
 
 /**
+ * OK! Project 3! Started after the due date!
+ *
+ * Learn javassist! Learn bytecode manpiulation! Learn Seminal paper on path profiling! Learn Kotlin!!
+ *
+ * fail course :(
+ *
+ * an intellij-porject-based (sorry no fancy dependency management, TODO learn gradle or sbt or maven)
+ * available here: https://github.com/Groostav/CMPT886-Proj-3
+ *
  * Created by Geoff on 3/22/2016.
  */
 
