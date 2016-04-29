@@ -164,7 +164,7 @@ class JavassistFixture {
         var introspectableClass = pool.get("com.softwareleyline.ExampleCode")
 
         //act
-        val method = introspectableClass.getMethod("exampleDag", "()V")
+        val method = introspectableClass.getMethod("runDAG", "()V")
         val blocks = ControlFlow(method).basicBlocks()
         // ok, so each block has 'entrances' and 'exits',
         // except for the first one in the method and the last one in the method.
@@ -182,7 +182,7 @@ class JavassistFixture {
         introspectableClass.freeze();
         var instance = introspectableClass.toClass().newInstance() as ExampleCode
 
-        instance.exampleDag();
+        instance.runDAG();
 
     }
 
@@ -206,6 +206,12 @@ class JavassistFixture {
     // but I really dont want to have to dick around with build systems (again) to get this assignment off the ground
 
     //so, lets spend another 10 minutes with javassist.
+
+    //alright, so im pretty sure at this point that to properly instriment basic blocks I'm
+    //looking at manipulation of indicies, which is really un-fun. So for now I'm going to implenent
+    // this stuff in function calls, which mimmick the graph.
+
+    class
 
 
     private fun getExits(block : ControlFlow.Block) : Sequence<BasicBlock> {

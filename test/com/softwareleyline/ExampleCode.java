@@ -13,10 +13,9 @@ public class ExampleCode {
         this.d = d;
     }
 
-    public void exampleDag(){
+    public void runDAG(){
 
         if(A()){
-
             if(B()){
                 C();
             }
