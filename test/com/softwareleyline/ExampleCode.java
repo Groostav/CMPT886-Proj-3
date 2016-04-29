@@ -31,6 +31,10 @@ public class ExampleCode {
         F();
     }
 
+    public int getPathID(){
+        return Assig3DriverKt.getPath();
+    }
+
     public boolean A() { return a; }
     public boolean B() { return b; }
     public void C(){}

@@ -17,7 +17,7 @@ class Assig3Driver {
 
         val ctClass = rewriteByteCode(map, callGraph.flattened())
 
-        val result = runTest(ctClass, a = false, b = false, d = false)
+        val result = runTest(ctClass, a = true, b = true, d = true)
 
         assertThat(result).describedAs("the resulting Path ID").isEqualTo(1)
     }
@@ -33,10 +33,7 @@ class Assig3Driver {
 
         instance.runDAG();
 
-        path = 0;
-        lastVisitedNode = "";
-
-        return path;
+        return instance.pathID;
     }
 
     private fun buildGraph() : Node {
