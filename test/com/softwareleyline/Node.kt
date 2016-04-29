@@ -24,7 +24,7 @@ abstract class NodeVisitor{
 }
 
 
-class Node(val name : String, val signature : String) {
+data class Node(val name : String, val signature : String) {
 
     val successors : MutableList<Node> = ArrayList()
     val predeccessors : MutableList<Node> = ArrayList()
@@ -44,14 +44,13 @@ class Node(val name : String, val signature : String) {
         visitor.leave(this);
     }
 
-    val flattened : Set<Node>
-        get() {
-            //yaay recursive fields! neat.
-            return setOf(this).union(predeccessors.flatMap { it.flattened })
-        }
+    fun flattened() : Set<Node> {
+        //yaay recursive fields! neat.
+        return setOf(this).union(successors.flatMap { it.flattened() })
+    }
 
     fun getOlderSiblingsBy(parent: Node) : List<Node> {
-        return parent.successors.run { subList(0, indexOf(parent)) }
+        return parent.successors.run { subList(0, indexOf(this@Node)) }
     }
 
 }
@@ -70,7 +69,7 @@ class PathCountingVisitor : NodeVisitor() {
     }
 
     override fun leave(node: Node) {
-        val totalPathsOut = node.successors.fold(1){ sum, node -> sum + pathCountByNode[node]!! }
+        val totalPathsOut = node.successors.sumBy{ pathCountByNode[it]!! }.coerceAtLeast(1)
 
         _pathCountByNode[node] = totalPathsOut
 

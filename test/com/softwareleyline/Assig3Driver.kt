@@ -1,6 +1,9 @@
 package com.softwareleyline
 
 import javassist.ClassPool
+import javassist.CtClass
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 /**
@@ -12,15 +15,24 @@ class Assig3Driver {
         val callGraph = buildGraph()
         val map = buildNodeMap(callGraph)
 
-        rewriteByteCode(map, callGraph.flattened)
+        val ctClass = rewriteByteCode(map, callGraph.flattened())
 
-        runTest(a = true, b = true, d = false)
+        val result = runTest(ctClass, a = false, b = false, d = false)
+
+        assertThat(result).describedAs("the resulting Path ID").isEqualTo(1)
     }
 
-    private fun runTest(a: Boolean, b: Boolean, d: Boolean) : Int {
-        val code = ExampleCode(a, b, d)
+    private fun runTest(provider : CtClass, a: Boolean, b: Boolean, d: Boolean) : Int {
+        val ctor = provider.toClass().getConstructor(
+                Boolean::class.java,
+                Boolean::class.java,
+                Boolean::class.java
+        )
 
-        code.runDAG()
+        val instance = ctor.newInstance(a, b, d) as ExampleCode
+
+        instance.runDAG();
+
         path = 0;
         lastVisitedNode = "";
 
@@ -28,12 +40,12 @@ class Assig3Driver {
     }
 
     private fun buildGraph() : Node {
-        val a = Node("A", "B()")
-        val b = Node("B", "B()")
-        val c = Node("C", "V()")
-        val d = Node("D", "B()")
-        val e = Node("E", "V()")
-        val f = Node("F", "V()")
+        val a = Node("A", "()Z")
+        val b = Node("B", "()Z")
+        val c = Node("C", "()V")
+        val d = Node("D", "()Z")
+        val e = Node("E", "()V")
+        val f = Node("F", "()V")
 
         a.successors.addAll(listOf(b, c))
         b.predeccessors.add(a)
@@ -60,45 +72,47 @@ class Assig3Driver {
         return visitor.pathCountByNode;
     }
 
-    private fun rewriteByteCode(nodeByPathCount : Map<Node, Int>, nodesToReWrite : Set<Node>){
+    private fun rewriteByteCode(nodeByPathCount : Map<Node, Int>, nodesToReWrite : Set<Node>) : CtClass {
 
         pathCountByNodeName = nodeByPathCount.mapKeys { it.key.name }
         nodeByName = nodesToReWrite.associateBy { it.name }
         //_god_ i love this language.
 
         val pool = ClassPool.getDefault();
-        var testingClazz = pool.get("com.softwareleyline.ExampleCode")
+        var clazz = pool.get("com.softwareleyline.ExampleCode")
 
         for(node in nodesToReWrite){
-            val method = testingClazz.getMethod(node.name, node.signature)
+            val method = clazz.getMethod(node.name, node.signature)
 
-            method.insertBefore("com.softwareleyline.Assig3Driver.Companion.hit(${node.name})")
+            method.insertBefore("com.softwareleyline.Assig3DriverKt.hit(\"${node.name}\");")
         }
 
-        testingClazz.freeze()
+        clazz.freeze()
+
+        return clazz
     }
 
-    //TODO thread-safety,
-    // could use thread locals although if javassist accepted a closure, life would be so much easier
-    // (ie method.insertBefore { doXYZ(); } rather than method.insertBefore("com.staticMethodCall(contextFreeArgs)")
-    companion object{
+}
 
-        var pathCountByNodeName : Map<String, Int> = emptyMap()
-        var nodeByName : Map<String, Node> = emptyMap();
+var pathCountByNodeName : Map<String, Int> = emptyMap()
+var nodeByName : Map<String, Node> = emptyMap();
 
-        var path = 0
-        var lastVisitedNode = ""
+var path = 0
+var lastVisitedNode = ""
 
-        //well, insertBefore doesnt take a closure, annoyingly,
-        // so im reduced to this kind of singleton.
-        @JvmStatic fun hit(name : String) {
+//well, insertBefore doesnt take a closure, annoyingly,
+// so im reduced to this kind of singleton.
+fun hit(name : String) {
 
-            val olderSibs = nodeByName.get(name)!!.getOlderSiblingsBy(nodeByName.get(lastVisitedNode)!!)
-            path += olderSibs.sumBy { pathCountByNodeName[it.name]!! }
-
-            lastVisitedNode = name;
-
-            return;
-        }
+    if(lastVisitedNode.isEmpty()){
+        lastVisitedNode = name;
+        return;
     }
+
+    val olderSibs = nodeByName.get(name)!!.getOlderSiblingsBy(nodeByName.get(lastVisitedNode)!!)
+    path += olderSibs.sumBy { pathCountByNodeName[it.name]!! }
+
+    lastVisitedNode = name;
+
+    return;
 }

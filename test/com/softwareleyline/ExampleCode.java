@@ -31,10 +31,10 @@ public class ExampleCode {
         F();
     }
 
-    private boolean A() { return a; }
-    private boolean B() { return b; }
-    private void C(){}
-    private boolean D() { return d; }
-    private void E(){}
-    private void F(){}
+    public boolean A() { return a; }
+    public boolean B() { return b; }
+    public void C(){}
+    public boolean D() { return d; }
+    public void E(){}
+    public void F(){}
 }
