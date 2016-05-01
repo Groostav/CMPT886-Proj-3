@@ -49,7 +49,12 @@ data class Node(val name : String, val signature : String) {
         return setOf(this).union(successors.flatMap { it.flattened() })
     }
 
+    fun getOlderSiblingsBy(parentName : String) : List<Node> {
+        return getOlderSiblingsBy(predeccessors.single { it.name == parentName })
+    }
+
     fun getOlderSiblingsBy(parent: Node) : List<Node> {
+        assert(this in parent.successors) { "$parent is not a predecessor to $this" }
         return parent.successors.run { subList(0, indexOf(this@Node)) }
     }
 
