@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="bytecode-parser-1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/bytecode-parser-1.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

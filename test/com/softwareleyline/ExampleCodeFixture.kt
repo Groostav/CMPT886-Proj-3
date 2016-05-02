@@ -15,10 +15,10 @@ class ExampleCodeFixture {
         val graph = buildGraph()
 
         //act
-        val (pathID, pathProvider) = driver.determinePathFor(graph) {
+        val (pathID, pathProvider) = driver.determinePathFor("com.softwareleyline.ExampleCode", graph, {
             val instance = ExampleCode(true, true, true)
             instance.runDAG();
-        }
+        })
 
         //assert
         assertThat(pathID).isEqualTo(2)

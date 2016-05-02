@@ -31,7 +31,10 @@ public class ExampleCode {
         F();
     }
 
-    public boolean A() { return a; }
+    public boolean A() {
+        Assig3DriverKt.hit("A");
+        return a;
+    }
     public boolean B() { return b; }
     public void C(){}
     public boolean D() { return d; }
