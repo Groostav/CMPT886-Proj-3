@@ -8,6 +8,8 @@ class PathCountingVisitor : NodeVisitor() {
 
     private val _pathCountByNode = HashMap<Node, Int>()
 
+    override val predecessorsFirst = false;
+
     val pathCountByNode : Map<Node, Int>
         get() = _pathCountByNode
 

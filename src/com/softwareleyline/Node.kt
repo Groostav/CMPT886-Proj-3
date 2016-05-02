@@ -10,9 +10,11 @@ data class Node(val name : String, val signature : String) {
 
     fun accept(visitor : NodeVisitor){
 
-        if(predeccessors.any { ! visitor.saw(it) } ){
+        if(visitor.predecessorsFirst && predeccessors.any { ! visitor.saw(it) } ){
             return;
         }
+
+        if(visitor.saw(this)){ return; }
 
         visitor.markAsSeen(this);
 

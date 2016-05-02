@@ -11,8 +11,6 @@ class Assig3Driver {
 
     /**
      * executes the call to profile with installed instrimentation as per the provided graph.
-     *
-     * note: the profiled
      */
     fun determinePathFor(targetClassName: String, callGraph: Node, callToProfile: () -> Unit) : Pair<Int, () -> Path> {
         val map = buildNodeMap(callGraph)

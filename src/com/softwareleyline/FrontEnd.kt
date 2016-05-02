@@ -13,9 +13,9 @@ import java.io.InputStreamReader
 fun main(args : Array<String>){
 
     val options = Options().apply {
-        addOption("c", "className", true, "the (fully-qualified) name of the class to rewrite, eg 'com.softwareleyline.ExampleCode'")
-        addOption("g", "methodGraph", true, "a path to the json-encoded method call graph to instrument, eg 'D:/Users/Code/heffe/resources/SampleGraph.json'")
-        addOption("m", "targetMethod", true, "the name of a zero-arg method to call on <className> to test, eg 'runDag'")
+        addOption("c", "className", true, "the (fully-qualified) name of the class to rewrite, defaults to 'com.softwareleyline.ExampleCode'")
+        addOption("g", "methodGraph", true, "a path to the json-encoded method call graph to instrument, defaults to  'ExampleCodeGraph.json'")
+        addOption("m", "targetMethod", true, "the name of a zero-arg method to call on <className> to test, defaults to 'runDAG'")
     }
 
     var parser = GnuParser();
@@ -23,7 +23,7 @@ fun main(args : Array<String>){
     val cmd = parser.parse(options, args)
 
     val targetClass = cmd.getOptionValue("className", "com.softwareleyline.ExampleCode")
-    val graph = cmd.getOptionValue("methodGraph", "SampleGraph.json")
+    val graph = cmd.getOptionValue("methodGraph", "ExampleCodeGraph.json")
     val targetMethod = cmd.getOptionValue("targetMethod", "runDAG")
 
     println("heffe instrumenting $graph in $targetClass, running with $targetMethod...")

@@ -19,6 +19,8 @@ abstract class NodeVisitor{
         visited.add(node);
     }
 
+    open val predecessorsFirst = true;
+
     abstract fun enter(node : Node);
     abstract fun leave(node : Node);
 }
