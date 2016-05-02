@@ -12,7 +12,7 @@ class ExampleCodeFixture {
     @Test fun when_branching_left_should_get_zero(){
         //setup
         val driver = Assig3Driver()
-        val graph = buildGraph()
+        val graph = SampleGraph.buildGraph()
 
         //act
         val (pathID, pathProvider) = driver.determinePathFor("com.softwareleyline.ExampleCode", graph, {
@@ -25,25 +25,5 @@ class ExampleCodeFixture {
         assertThat(pathProvider()).isEqualTo(Path("A", "B", "C", "D", "E", "F"))
     }
 
-    private fun buildGraph() : Node {
-        val a = Node("A", "()Z") //yeah, "Z" is JVM speak for boolean, weird. B was byte so...
-        val b = Node("B", "()Z")
-        val c = Node("C", "()V")
-        val d = Node("D", "()Z")
-        val e = Node("E", "()V")
-        val f = Node("F", "()V")
-
-        a.successors.addAll(listOf(b, c))
-        b.predeccessors.add(a)
-        b.successors.addAll(listOf(d, c))
-        c.predeccessors.addAll(listOf(a, b))
-        c.successors.add(d)
-        d.predeccessors.addAll(listOf(b, c))
-        d.successors.addAll(listOf(e, f))
-        e.predeccessors.add(d)
-        e.successors.add(f)
-        f.predeccessors.addAll(listOf(d, e))
-
-        return a;
-    }
 }
+
