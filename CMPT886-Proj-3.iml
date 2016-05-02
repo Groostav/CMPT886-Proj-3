@@ -18,5 +18,6 @@
     <orderEntry type="library" name="bytecode-parser-1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" name="com.google.code.gson:gson:2.6.2" level="project" />
+    <orderEntry type="library" name="commons-cli:commons-cli:1.2" level="project" />
   </component>
 </module>

@@ -1,0 +1,72 @@
+{
+  "nodes": [
+    {
+      "className": "",
+      "methodName": "A",
+      "signature": "()Z",
+      "predecessors": [],
+      "successors": [
+        "B",
+        "C"
+      ]
+    },
+    {
+      "className": "",
+      "methodName": "B",
+      "signature": "()Z",
+      "predecessors": [
+        "A"
+      ],
+      "successors": [
+        "D",
+        "C"
+      ]
+    },
+    {
+      "className": "",
+      "methodName": "D",
+      "signature": "()Z",
+      "predecessors": [
+        "B",
+        "C"
+      ],
+      "successors": [
+        "E",
+        "F"
+      ]
+    },
+    {
+      "className": "",
+      "methodName": "E",
+      "signature": "()V",
+      "predecessors": [
+        "D"
+      ],
+      "successors": [
+        "F"
+      ]
+    },
+    {
+      "className": "",
+      "methodName": "F",
+      "signature": "()V",
+      "predecessors": [
+        "D",
+        "E"
+      ],
+      "successors": []
+    },
+    {
+      "className": "",
+      "methodName": "C",
+      "signature": "()V",
+      "predecessors": [
+        "A",
+        "B"
+      ],
+      "successors": [
+        "D"
+      ]
+    }
+  ]
+}

@@ -7,6 +7,10 @@ public class ExampleCode {
 
     private final boolean a, b, d;
 
+    public ExampleCode(){
+        this(true, true, true);
+    }
+
     public ExampleCode(boolean a, boolean b, boolean d) {
         this.a = a;
         this.b = b;
