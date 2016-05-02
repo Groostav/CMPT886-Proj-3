@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    {
+      "className": "",
+      "methodName": "A",
+      "signature": "()Z",
+      "predecessors": [],
+      "successors": ["B", "C"]
+    },
+    {
+      "className": "",
+      "methodName": "B",
+      "signature": "()Z",
+      "predecessors": ["A"],
+      "successors": ["C", "E", "F"]
+    },
+    {
+      "className": "",
+      "methodName": "E",
+      "signature": "()V",
+      "predecessors": ["B", "C"],
+      "successors": ["F"]
+    },
+    {
+      "className": "",
+      "methodName": "F",
+      "signature": "()V",
+      "predecessors": ["B", "C", "E"],
+      "successors": []
+    },
+    {
+      "className": "",
+      "methodName": "C",
+      "signature": "()V",
+      "predecessors": ["A", "B"],
+      "successors": ["E", "F"]
+    }
+  ]
+}

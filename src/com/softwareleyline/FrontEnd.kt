@@ -1,9 +1,7 @@
 package com.softwareleyline
 
 import com.google.gson.GsonBuilder
-import org.apache.commons.cli.GnuParser
-import org.apache.commons.cli.Options
-import org.apache.commons.cli.Parser
+import org.apache.commons.cli.*
 import java.io.FileInputStream
 import java.io.InputStreamReader
 
@@ -20,7 +18,15 @@ fun main(args : Array<String>){
 
     var parser = GnuParser();
 
-    val cmd = parser.parse(options, args)
+    val cmd = try {
+        parser.parse(options, args)
+    }
+    catch(e : ParseException){
+        System.err.println(e.message)
+        HelpFormatter().printHelp("heffe", options)
+        System.exit(1)
+        throw UnsupportedOperationException()
+    }
 
     val targetClass = cmd.getOptionValue("className", "com.softwareleyline.ExampleCode")
     val graph = cmd.getOptionValue("methodGraph", "ExampleCodeGraph.json")

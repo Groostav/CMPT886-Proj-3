@@ -129,6 +129,10 @@ fun hit(name : String) {
         lastVisitedNode = name;
         return;
     }
+    if (name !in nodeByName.keys){
+        println("<saw hit on uninstructed method>")
+        return;
+    }
 
     val olderSibs = nodeByName.get(name)!!.getOlderSiblingsBy(nodeByName.get(lastVisitedNode)!!)
     path += olderSibs.sumBy { pathCountByNodeName[it.name]!! }
